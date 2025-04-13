@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IntentPlay – A Space for Mindful Exploration</title>
+  <!-- Using Noto Serif for a slightly more classic/bookish feel -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* --- Theme: Quiet Study / Zen --- */
+      --bg-color: #f4f1eb; /* Soft, slightly textured off-white/beige */
+      --container-bg: #ffffff; /* Clean white for the main content area */
+      --text-primary: #333333;   /* Dark grey for main text */
+      --text-secondary: #777777; /* Lighter grey for subtitles, placeholders */
+      --accent-primary: #8a6e58; /* Muted, warm brown/taupe */
+      --accent-secondary: #a89a8e; /* Lighter, softer taupe */
+      --quote-color: #6a7b76;    /* Muted, calm green/grey for quotes */
+      --border-color: #e0dcd3; /* Soft border color */
+      --shadow-color: rgba(0, 0, 0, 0.08); /* Very subtle shadow */
+      --error-color: #c97575;    /* Muted red for errors */
+      --font-heading: 'Noto Serif', serif;
+      --font-body: 'Lato', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-body);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+      background-color: var(--bg-color);
+      /* Optional: Subtle texture */
+      /* background-image: url('data:image/svg+xml,%3Csvg width="6" height="6" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="%23e0dcd3" fill-opacity="0.4" fill-rule="evenodd"%3E%3Cpath d="M5 0h1L0 6V5zM6 5v1H5z"/%3E%3C/g%3E%3C/svg%3E'); */
+      color: var(--text-primary);
+      line-height: 1.7; /* Slightly more spacious line height */
+      overflow-x: hidden;
+    }
+
+    .container {
+      background: var(--container-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px; /* Softer corners */
+      padding: 3rem 3.5rem; /* More padding */
+      max-width: 900px; /* Increased max-width to accommodate side-by-side */
+      width: 95%;
+      /* text-align: center; Removed default center alignment */
+      box-shadow: 0 5px 25px var(--shadow-color);
+      animation: fadeInContainer 1.2s ease-out;
+      position: relative;
+      z-index: 1;
+    }
+
+    @keyframes fadeInContainer {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 2.3em; /* Slightly smaller */
+      margin-bottom: 0.7rem;
+      color: var(--text-primary); /* Use primary text color */
+      letter-spacing: 0.5px;
+      text-align: center; /* Center heading specifically */
+    }
+
+    .subtitle {
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: 1.1em;
+      color: var(--text-secondary);
+      margin-bottom: 2.5rem;
+      text-align: center; /* Center subtitle specifically */
+    }
+
+    #quote-display {
+      font-family: var(--font-heading);
+      font-style: italic;
+      font-weight: 400; /* Normal italic */
+      font-size: 1.15em;
+      color: var(--quote-color);
+      margin: 2.5rem auto; /* Keep centered */
+      padding: 1.2rem 0; /* Padding top/bottom only */
+      border-top: 1px solid var(--border-color); /* Simple lines */
+      border-bottom: 1px solid var(--border-color);
+      max-width: 85%;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.6s ease-in-out;
+      text-align: center;
+    }
+    #quote-display.loading {
+        color: var(--text-secondary);
+        font-style: normal;
+    }
+
+
+    label { /* No longer visually hidden, acts as a proper label */
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--text-secondary);
+      font-size: 0.9em;
+      text-align: left; /* Align labels left */
+      margin-left: 5px; /* Small indent */
+    }
+
+    select, input[type="text"] {
+      width: 100%;
+      padding: 0.9rem 1.1rem; /* Slightly larger padding */
+      margin-bottom: 1.5rem; /* More space below inputs */
+      font-size: 1rem;
+      font-family: var(--font-body);
+      border-radius: 6px; /* Consistent rounded corners */
+      border: 1px solid var(--border-color);
+      background: #fff; /* Keep inputs white */
+      color: var(--text-primary);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    select {
+      appearance: none;
+      /* Simple arrow using SVG */
+      background-image: url('data:image/svg+xml;utf8,<svg fill="%23777777" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-size: 1.1em;
+      padding-right: 3rem;
+    }
+    option {
+        background: #fff;
+        color: var(--text-primary);
+    }
+
+    input[type="text"]::placeholder {
+      color: var(--text-secondary);
+      opacity: 0.8;
+    }
+
+    select:focus, input[type="text"]:focus {
+      outline: none;
+      border-color: var(--accent-primary); /* Use muted brown for focus */
+      box-shadow: 0 0 0 3px rgba(138, 110, 88, 0.15); /* Subtle focus ring */
+    }
+
+    /* Main Action Button */
+    button.action {
+      padding: 0.9rem 2rem;
+      margin: 0.5rem 0; /* Adjust margin for alignment */
+      font-size: 1rem;
+      font-family: var(--font-body);
+      font-weight: 400; /* Normal weight */
+      border-radius: 6px;
+      border: 1px solid var(--accent-primary);
+      background-color: var(--accent-primary);
+      color: #fff; /* White text on button */
+      cursor: pointer;
+      transition: background-color 0.3s, border-color 0.3s, transform 0.2s;
+      text-transform: none; /* No uppercase */
+      letter-spacing: 0.5px;
+      display: block; /* Make button block level */
+      width: 100%; /* Make button full width of its container */
+      max-width: 200px; /* Optional: Limit max width */
+      margin-left: auto; /* Center button if max-width is set */
+      margin-right: auto;
+    }
+
+    button.action:hover {
+      background-color: #7a5f4b; /* Darker shade of brown */
+      border-color: #7a5f4b;
+      transform: translateY(-1px);
+    }
+    button.action:active {
+        transform: translateY(0);
+        background-color: #6a5240;
+    }
+
+    /* Regenerate button style */
+    button.regenerate {
+        padding: 0.7rem 1.4rem;
+        margin: 0.5rem auto; /* Center button */
+        font-size: 0.9rem;
+        font-family: var(--font-body);
+        font-weight: 400;
+        border-radius: 6px;
+        border: 1px solid var(--accent-secondary); /* Lighter border */
+        background: transparent;
+        color: var(--accent-primary); /* Muted brown text */
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s, transform 0.2s;
+        text-transform: none;
+        letter-spacing: 0.5px;
+        display: block; /* Make block level */
+    }
+    button.regenerate:hover {
+        background: rgba(168, 154, 142, 0.1); /* Very faint background */
+        color: #7a5f4b; /* Darker text on hover */
+        transform: translateY(-1px);
+    }
+     button.regenerate:active {
+        transform: translateY(0);
+        background: rgba(168, 154, 142, 0.2);
+    }
+
+    /* --- Styles for Side-by-Side Layout --- */
+    .main-content-wrapper {
+        display: flex;
+        gap: 3rem; /* Increased gap */
+        align-items: flex-start; /* Align items to the top */
+        margin-top: 2.5rem; /* Space above the wrapper */
+        margin-bottom: 2.5rem; /* Space below the wrapper */
+    }
+
+    .input-area {
+        flex: 3; /* Give input area more space (e.g., 60%) */
+        min-width: 0; /* Prevent flex items from overflowing */
+        display: flex; /* Use flexbox internally for button/error */
+        flex-direction: column;
+    }
+
+    .suggestions-section {
+        flex: 2; /* Give suggestions area less space (e.g., 40%) */
+        min-width: 0; /* Prevent flex items from overflowing */
+        margin-top: 0; /* Remove previous top margin */
+        padding-top: 0; /* Remove previous top padding */
+        border-top: none; /* Remove previous top border */
+        border-left: 1px solid var(--border-color); /* Add left border for separation */
+        padding-left: 3rem; /* Match the gap */
+        text-align: center; /* Center content within suggestions */
+    }
+
+    .suggestions-section h3 {
+        font-family: var(--font-heading);
+        font-weight: 400; /* Normal weight */
+        color: var(--accent-primary); /* Muted brown */
+        margin-bottom: 1.5rem; /* Adjust spacing below heading */
+        font-size: 1.2em;
+        text-align: center; /* Ensure heading is centered */
+    }
+
+    .topic-suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      justify-content: center; /* Center topics */
+      max-width: 100%;
+      margin-bottom: 1.5rem; /* Adjust spacing */
+    }
+    /* --- End Side-by-Side Styles --- */
+
+
+    .topic {
+      background: rgba(168, 154, 142, 0.1); /* Very faint taupe background */
+      padding: 0.6rem 1.2rem;
+      border-radius: 15px; /* Pill shape */
+      cursor: pointer;
+      font-size: 0.95rem;
+      color: var(--accent-primary); /* Muted brown text */
+      border: 1px solid transparent; /* Placeholder for hover */
+      transition: background 0.3s, border-color 0.3s, color 0.3s;
+    }
+
+    .topic:hover {
+      background: rgba(168, 154, 142, 0.2);
+      border-color: var(--accent-secondary);
+      color: #7a5f4b;
+    }
+    .topic:active {
+        background: rgba(168, 154, 142, 0.3);
+    }
+
+    #error-message {
+        color: var(--error-color);
+        margin-top: 1rem; /* Space above error */
+        font-size: 0.9em;
+        min-height: 1.2em;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+        text-align: center; /* Center error message */
+        width: 100%; /* Ensure it takes width in flex column */
+    }
+    #error-message.visible {
+        opacity: 1;
+    }
+
+    /* Footer Style */
+    .footer {
+        margin-top: 3rem;
+        font-size: 0.85em;
+        color: var(--text-secondary);
+        opacity: 0.8;
+        text-align: center;
+        width: 100%;
+        position: relative;
+        z-index: 0;
+    }
+
+    /* --- Responsive Adjustments --- */
+     @media (max-width: 850px) { /* Breakpoint for stacking */
+        .main-content-wrapper {
+            flex-direction: column; /* Stack vertically */
+            gap: 0; /* Remove horizontal gap */
+            align-items: stretch; /* Make items full width */
+        }
+
+        .input-area {
+            flex-basis: auto; /* Reset flex basis */
+            width: 100%;
+            margin-bottom: 2.5rem; /* Add space below input area when stacked */
+        }
+
+        .suggestions-section {
+            flex-basis: auto; /* Reset flex basis */
+            width: 100%;
+            border-left: none; /* Remove side border */
+            padding-left: 0; /* Remove side padding */
+            /* Restore original top separation */
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            text-align: center; /* Re-center text */
+        }
+         .suggestions-section h3 {
+             text-align: center; /* Re-center heading */
+         }
+         .container {
+             max-width: 750px; /* Revert max-width */
+         }
+    }
+
+     @media (max-width: 768px) {
+        body { padding: 1rem; }
+        .container { padding: 2rem 1.5rem; width: 95%; }
+        h1 { font-size: 2em; }
+        .subtitle { font-size: 1em; margin-bottom: 2rem; }
+        #quote-display { font-size: 1.1em; max-width: 95%; margin: 2rem auto; }
+        select, input[type="text"] { padding: 0.8rem 1rem; }
+        button.action { padding: 0.8rem 1.8rem; }
+        button.regenerate { padding: 0.6rem 1.2rem; }
+        .topic { padding: 0.5rem 1rem; font-size: 0.9rem; }
+        .footer { margin-top: 2rem; }
+        label { margin-left: 0; } /* Remove indent on smaller screens */
+
+        /* Ensure stacking persists */
+        .main-content-wrapper { flex-direction: column; gap: 0; align-items: stretch; }
+        .input-area { flex-basis: auto; width: 100%; margin-bottom: 2.5rem; }
+        .suggestions-section { flex-basis: auto; width: 100%; border-left: none; padding-left: 0; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-color); text-align: center; }
+        .suggestions-section h3 { text-align: center; }
+    }
+     @media (max-width: 480px) {
+        .container { padding: 1.5rem 1rem; }
+        h1 { font-size: 1.8em; }
+        button.action { padding: 0.7rem 1.5rem; font-size: 0.95rem; max-width: none; } /* Allow full width */
+        button.regenerate { padding: 0.5rem 1rem; font-size: 0.85rem; }
+        .topic { padding: 0.4rem 0.8rem; font-size: 0.85rem; }
+        .suggestions-section h3 { font-size: 1.1em; }
+    }
+
+  </style>
+</head>
+<body>
+  <!-- No background text element needed -->
+
+  <div class="container">
+    <h1>IntentPlay</h1>
+    <p class="subtitle">A Space for Mindful Exploration</p>
+
+    <!-- Inspirational Quote Display -->
+    <div id="quote-display" class="loading">Finding words of wisdom...</div>
+
+    <!-- Wrapper for side-by-side layout -->
+    <div class="main-content-wrapper">
+
+      <!-- Area for Platform, Query, Button -->
+      <div class="input-area">
+        <label for="platform">Choose a Platform:</label>
+        <select id="platform" onchange="saveSettings()">
+          <option value="youtube">YouTube</option>
+          <option value="ted">TED Talks</option>
+          <option value="wikipedia">Wikipedia</option>
+          <option value="archive">Internet Archive</option>
+          <option value="bigthink">BigThink</option>
+          <option value="spotify">Spotify (Podcasts)</option>
+          <!-- Add more platforms here if desired -->
+        </select>
+
+        <label for="query">Enter Topic or Mood:</label>
+        <input type="text" id="query" placeholder="e.g., Philosophy, Calm Music, Learning...">
+
+        <!-- Updated Action Button -->
+        <button onclick="launchContent()" class="action">📖 Explore</button>
+
+        <!-- Error Message Area -->
+        <div id="error-message"></div>
+      </div>
+
+      <!-- Topic Suggestions Section (Now a flex item) -->
+      <div class="suggestions-section">
+        <h3>Ideas to Ponder</h3>
+        <div id="topics" class="topic-suggestions">
+          <!-- Topics generated by JS -->
+        </div>
+        <!-- Updated Regenerate Button -->
+        <button onclick="generateTopics()" class="regenerate">Suggest New Paths</button>
+      </div>
+
+    </div> <!-- End main-content-wrapper -->
+
+
+    <!-- Footer -->
+    <div class="footer">
+      Cultivate curiosity. Explore intentionally.
+    </div>
+
+  </div> <!-- End container -->
+
+  <script>
+    // --- Constants and Variables ---
+    const topicPool = [
+      "Mindfulness", "Philosophy of Mind", "History of Science", "Deep Reading",
+      "Classical Music", "Ambient Soundscapes", "Poetry Analysis", "Slow Living",
+      "Art History", "Documentary Films", "Learning Techniques", "Creative Writing",
+      "Stoicism", "Ethics", "Cultural Anthropology", "Linguistics",
+      "Meditation Guides", "Nature Documentaries", "Critical Thinking", "Logic Puzzles",
+      "Sustainable Design", "Minimalism", "Book Summaries", "Cognitive Science",
+      "World History", "Astronomy Basics", "Quiet Contemplation", "Digital Wellbeing" // Adjusted topics
+    ];
+
+    const quotes = [
+        "The journey of a thousand miles begins with a single step. - Lao Tzu",
+        "Knowing yourself is the beginning of all wisdom. - Aristotle",
+        "The only true wisdom is in knowing you know nothing. - Socrates",
+        "The mind is not a vessel to be filled, but a fire to be kindled. - Plutarch",
+        "An investment in knowledge pays the best interest. - Benjamin Franklin",
+        "Wonder is the beginning of wisdom. - Greek Proverb",
+        "The important thing is not to stop questioning. Curiosity has its own reason for existing. - Albert Einstein",
+        "The unexamined life is not worth living. - Socrates",
+        "It does not matter how slowly you go as long as you do not stop. - Confucius",
+        "Adopt the pace of nature: her secret is patience. - Ralph Waldo Emerson",
+        "Silence is a source of great strength. - Lao Tzu",
+        "The reading of all good books is like conversation with the finest minds of past centuries. - René Descartes",
+        "There is more treasure in books than in all the pirate's loot on Treasure Island. - Walt Disney",
+        "Simplicity is the ultimate sophistication. - Leonardo da Vinci",
+        "Quiet people have the loudest minds. - Stephen Hawking" // Adjusted quotes
+    ];
+
+    const platformSelect = document.getElementById('platform');
+    const queryInput = document.getElementById('query');
+    const topicsContainer = document.getElementById("topics");
+    const quoteDisplay = document.getElementById('quote-display');
+    const errorMessageDiv = document.getElementById('error-message');
+
+    // --- Initialization ---
+    window.onload = () => {
+        loadSettings();
+        generateTopics();
+        displayRandomQuote(); // Display first quote immediately
+        setInterval(displayRandomQuote, 25000); // Slightly longer interval for quotes
+    };
+
+    // --- Event Listeners ---
+    queryInput.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+          launchContent();
+        }
+    });
+
+    // --- Core Functions ---
+
+    function displayRandomQuote() {
+        if (!quoteDisplay) return;
+        const randomIndex = Math.floor(Math.random() * quotes.length);
+        const isFirstLoad = quoteDisplay.classList.contains('loading');
+
+        quoteDisplay.style.opacity = 0; // Fade out
+
+        setTimeout(() => {
+            quoteDisplay.textContent = `"${quotes[randomIndex]}"`;
+            quoteDisplay.style.opacity = 1; // Fade in
+            if (isFirstLoad) {
+                quoteDisplay.classList.remove('loading');
+            }
+        }, 600); // Slightly longer fade transition
+    }
+
+    function getRandomTopics(n = 7) { // Slightly fewer topics for cleaner look
+      const shuffled = [...topicPool].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, n);
+    }
+
+    function generateTopics() {
+      if (!topicsContainer) return;
+      topicsContainer.innerHTML = ""; // Clear existing
+      const topics = getRandomTopics();
+      topics.forEach(topic => {
+        const span = document.createElement("span");
+        span.className = "topic";
+        span.textContent = topic;
+        span.onclick = () => {
+            queryInput.value = topic;
+            queryInput.focus(); // Focus input after clicking suggestion
+            // Subtle feedback: quick background flash
+            span.style.backgroundColor = 'rgba(168, 154, 142, 0.3)';
+            setTimeout(() => {
+                // Check if hovered before resetting, otherwise use default
+                if (!span.matches(':hover')) {
+                    span.style.backgroundColor = 'rgba(168, 154, 142, 0.1)';
+                } else {
+                     span.style.backgroundColor = 'rgba(168, 154, 142, 0.2)';
+                }
+            }, 200);
+        };
+        topicsContainer.appendChild(span);
+      });
+    }
+
+    function launchContent() {
+      const platform = platformSelect.value;
+      const query = queryInput.value.trim();
+      const encodedQuery = encodeURIComponent(query);
+      let url = '';
+
+      showError('');
+
+      if (!query) {
+        showError("Please enter a topic or keyword to explore.");
+        queryInput.focus();
+        return;
+      }
+
+      switch(platform) {
+        case 'youtube':
+          url = `https://www.youtube.com/results?search_query=${encodedQuery}`;
+          break;
+        case 'ted':
+          url = `https://www.ted.com/search?q=${encodedQuery}`;
+          break;
+        case 'wikipedia':
+          url = `https://en.wikipedia.org/w/index.php?search=${encodedQuery}`;
+          break;
+        case 'archive':
+          // Search general text/video on Archive
+          url = `https://archive.org/search.php?query=${encodedQuery}`;
+          break;
+        case 'bigthink':
+          url = `https://bigthink.com/search/?q=${encodedQuery}`;
+          break;
+        case 'spotify':
+          url = `https://open.spotify.com/search/${encodedQuery}`;
+          break;
+        default:
+          console.warn("Unknown platform selected:", platform);
+          showError("Selected platform is not configured.");
+          return;
+      }
+
+      saveSettings();
+      window.open(url, '_blank');
+    }
+
+    function showError(message) {
+        if (!errorMessageDiv) return;
+        errorMessageDiv.textContent = message;
+        if (message) {
+            errorMessageDiv.classList.add('visible');
+        } else {
+            errorMessageDiv.classList.remove('visible');
+        }
+    }
+
+    // --- Local Storage for Settings ---
+    function saveSettings() {
+        try {
+            const settings = { lastPlatform: platformSelect.value };
+            localStorage.setItem('intentPlaySettings', JSON.stringify(settings));
+        } catch (e) {
+            console.warn("Could not save settings to localStorage:", e);
+        }
+    }
+
+    function loadSettings() {
+        try {
+            const savedSettings = localStorage.getItem('intentPlaySettings');
+            if (savedSettings) {
+                const settings = JSON.parse(savedSettings);
+                if (settings.lastPlatform && platformSelect.querySelector(`option[value="${settings.lastPlatform}"]`)) {
+                    platformSelect.value = settings.lastPlatform;
+                }
+            }
+        } catch (e) {
+            console.warn("Could not load settings from localStorage:", e);
+        }
+    }
+
+  </script>
+</body>
+</html>
